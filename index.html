@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noor Lifestyle — Islamic Lifestyle Dashboard</title>
+  <meta name="description"
+    content="A comprehensive, mobile-first Islamic Lifestyle Dashboard featuring prayer times, live countdown, triple calendar (Gregorian, Hijri, Punjabi Desi), 8-feature menu, Tasbeeh counter, and AI Islamic Scholar chatbot.">
+
+  <!-- Google Fonts: Outfit (UI), Plus Jakarta Sans (Body), Amiri (Arabic), Noto Nastaliq Urdu -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FontAwesome 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=2.4">
+</head>
+
+<body>
+
+  <!-- Ambient Glow Effects -->
+  <div class="ambient-glow-orb"></div>
+  <div class="ambient-glow-orb-2"></div>
+
+  <!-- SVG Gradient Definition for Radial Rings -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="tasbeehGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#14b8a6" />
+        <stop offset="50%" stop-color="#10b981" />
+        <stop offset="100%" stop-color="#f59e0b" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="container-app">
+
+    <!-- App Header & Navigation -->
+    <header class="app-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <div class="brand-title">
+          <i class="fas fa-moon text-warning fs-3"></i>
+          <span>Noor<span style="color: var(--accent-teal-light);">Life</span></span>
+        </div>
+        <span class="arabic-calligraphy ms-2 d-none d-sm-inline">نُورُ الإِسْلَام</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasHabits" id="btnOpenHabits" title="Daily Islamic Habits Tracker">
+          <i class="fas fa-clipboard-check me-1 text-emerald"></i> <span class="d-none d-sm-inline">Habits</span>
+        </button>
+        <button class="btn btn-sm lang-switch-btn" id="btnLanguageToggle"
+          title="اردو / انگریزی زبان تبدیل کریں (Switch Urdu / English)">
+          <i class="fas fa-globe me-1 text-teal"></i> English
+        </button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-3" data-bs-toggle="modal"
+          data-bs-target="#modalSettings">
+          <i class="fas fa-sliders-h me-1 text-teal"></i> Method
+        </button>
+        <button class="btn btn-sm btn-outline-warning rounded-pill px-3" data-bs-toggle="modal"
+          data-bs-target="#modalCityPicker">
+          <i class="fas fa-city me-1"></i> Cities
+        </button>
+      </div>
+    </header>
+
+    <!-- Location Bar -->
+    <div class="location-badge-box mt-2">
+      <div class="location-info">
+        <div class="location-icon-wrapper">
+          <i class="fas fa-location-dot"></i>
+        </div>
+        <div>
+          <div class="location-name" id="locationNameDisplay">Detecting Location...</div>
+          <div class="location-coords" id="locationCoordsDisplay">31.520° N, 74.358° E</div>
+        </div>
+      </div>
+      <button class="btn btn-locate" id="btnTriggerLocate" title="Refetch current GPS location">
+        <i class="fas fa-crosshairs me-1"></i> Auto GPS
+      </button>
+    </div>
+
+    <!-- MODULE 1: Hero Section & Prayer Timings -->
+    <section class="hero-card">
+      <div class="row align-items-center">
+        <!-- Next Prayer Countdown Column -->
+        <div class="col-lg-7 col-md-12 mb-3 mb-lg-0">
+          <div class="next-prayer-tag">
+            <i class="fas fa-bell"></i> Upcoming Prayer
+          </div>
+          <div class="next-prayer-name">
+            <span id="nextPrayerNameDisplay">Fajr</span>
+            <span class="next-prayer-arabic" id="nextPrayerArabicDisplay">الفجر</span>
+          </div>
+
+          <!-- Large Countdown Timer -->
+          <div class="countdown-box">
+            <div class="countdown-segment">
+              <span class="countdown-digit" id="countdownHours">00</span>
+              <span class="countdown-label" id="labelCountdownHours">گھنٹے</span>
+            </div>
+            <span class="countdown-divider">:</span>
+            <div class="countdown-segment">
+              <span class="countdown-digit" id="countdownMinutes">00</span>
+              <span class="countdown-label" id="labelCountdownMinutes">منٹ</span>
+            </div>
+            <span class="countdown-divider">:</span>
+            <div class="countdown-segment">
+              <span class="countdown-digit" id="countdownSeconds">00</span>
+              <span class="countdown-label" id="labelCountdownSeconds">سیکنڈ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Info / Spiritual Motivation -->
+        <div class="col-lg-5 col-md-12 text-lg-end text-start">
+          <div class="p-3 rounded-4"
+            style="background: rgba(4, 25, 20, 0.6); border: 1px solid rgba(52, 211, 153, 0.15);">
+            <div class="font-arabic text-warning fs-5 mb-1" style="direction: rtl;">
+              إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا
+            </div>
+            <div class="small text-muted fst-italic">
+              "Indeed, prayer has been decreed upon the believers a decree of specified times." (4:103)
+            </div>
+            <div class="mt-3 text-lg-end text-start">
+              <button class="btn btn-sm btn-warning fw-bold rounded-pill px-3 shadow-sm" id="btnHeroNamazGuide"
+                data-bs-toggle="modal" data-bs-target="#modalNamazGuide">
+                <i class="fas fa-person-praying me-1"></i> طریقہ نماز (Namaz Guide)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 Daily Prayer Timings Timeline (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha) -->
+      <div class="prayers-scroll-row" id="prayerTimesRow">
+        <!-- Dynamically injected prayer cards -->
+        <div class="prayer-time-card">
+          <div class="prayer-icon"><i class="fas fa-cloud-sun"></i></div>
+          <div class="prayer-label">Fajr</div>
+          <div class="prayer-time">--:--</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE: Daily Quran Verse & Hadith Cards (Dynamic Content) -->
+    <section class="mt-3">
+      <div class="row g-3">
+        <!-- Card 1: Ayat of the Day -->
+        <div class="col-lg-6 col-md-12">
+          <div class="daily-dynamic-card daily-ayat-card h-100" id="cardAyatOfDay">
+            <div class="wisdom-header">
+              <div class="d-flex align-items-center gap-2">
+                <div class="daily-card-icon-tag tag-ayat">
+                  <i class="fas fa-quran"></i>
+                </div>
+                <div>
+                  <h5 class="daily-card-title m-0">آیتِ مبارکہ (Ayat of the Day)</h5>
+                  <span class="small text-muted font-urdu" style="font-size: 0.78rem;">کلامِ الٰہی سے روزانہ
+                    بصیرت</span>
+                </div>
+              </div>
+              <span class="wisdom-badge-ref" id="dailyAyatRefBadge">Loading...</span>
+            </div>
+
+            <!-- Arabic Calligraphy Box -->
+            <div class="wisdom-arabic-box">
+              <div class="wisdom-arabic-text" id="dailyAyatArabic">
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+              </div>
+            </div>
+
+            <!-- Urdu Translation Box -->
+            <div class="wisdom-urdu-box">
+              <div class="wisdom-urdu-label"><i class="fas fa-language me-1"></i> اردو ترجمہ (Urdu Translation)</div>
+              <div class="wisdom-urdu-text" id="dailyAyatUrdu">
+                لوڈ کیا جا رہا ہے...
+              </div>
+            </div>
+
+            <!-- English Translation Text -->
+            <div class="wisdom-en-text" id="dailyAyatEn">
+              Loading authentic translation from AlQuran Cloud...
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="wisdom-actions-row">
+              <div class="wisdom-action-group">
+                <button class="btn-wisdom-action btn-wisdom-copy" id="btnCopyAyat" title="Copy Ayat text">
+                  <i class="fas fa-copy"></i> کاپی (Copy)
+                </button>
+                <button class="btn-wisdom-action btn-wisdom-share" id="btnShareAyat"
+                  title="Share with friends on WhatsApp">
+                  <i class="fab fa-whatsapp"></i> واٹس ایپ (Share)
+                </button>
+              </div>
+              <button class="btn-wisdom-action btn-wisdom-next" id="btnNextAyat" title="Fetch another random Ayah">
+                <i class="fas fa-shuffle"></i> اگلی آیت (Next)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Hadith of the Day -->
+        <div class="col-lg-6 col-md-12">
+          <div class="daily-dynamic-card daily-hadith-card h-100" id="cardHadithOfDay">
+            <div class="wisdom-header">
+              <div class="d-flex align-items-center gap-2">
+                <div class="daily-card-icon-tag tag-hadith">
+                  <i class="fas fa-book-open"></i>
+                </div>
+                <div>
+                  <h5 class="daily-card-title m-0">حدیثِ مبارکہ (Hadith of the Day)</h5>
+                  <span class="small text-muted font-urdu" style="font-size: 0.78rem;">فرمانِ رسولِ اکرم ﷺ</span>
+                </div>
+              </div>
+              <span class="wisdom-badge-ref" id="dailyHadithRefBadge">Loading...</span>
+            </div>
+
+            <!-- Arabic Calligraphy Box -->
+            <div class="wisdom-arabic-box">
+              <div class="wisdom-arabic-text" id="dailyHadithArabic">
+                قال رسول الله ﷺ...
+              </div>
+            </div>
+
+            <!-- Urdu Translation Box -->
+            <div class="wisdom-urdu-box">
+              <div class="wisdom-urdu-label"><i class="fas fa-language me-1"></i> اردو ترجمہ (Urdu Translation)</div>
+              <div class="wisdom-urdu-text" id="dailyHadithUrdu">
+                لوڈ کیا جا رہا ہے...
+              </div>
+            </div>
+
+            <!-- English Translation Text -->
+            <div class="wisdom-en-text" id="dailyHadithEn">
+              Loading authentic Hadith translation...
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="wisdom-actions-row">
+              <div class="wisdom-action-group">
+                <button class="btn-wisdom-action btn-wisdom-copy" id="btnCopyHadith" title="Copy Hadith text">
+                  <i class="fas fa-copy"></i> کاپی (Copy)
+                </button>
+                <button class="btn-wisdom-action btn-wisdom-share" id="btnShareHadith"
+                  title="Share with friends on WhatsApp">
+                  <i class="fab fa-whatsapp"></i> واٹس ایپ (Share)
+                </button>
+              </div>
+              <button class="btn-wisdom-action btn-wisdom-next" id="btnNextHadith" title="Read next authentic Hadith">
+                <i class="fas fa-shuffle"></i> اگلی حدیث (Next)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 2: The Triple Calendar System -->
+    <section class="mt-4">
+      <div class="section-title">
+        <i class="fas fa-calendar-alt"></i> The Triple Calendar System
+      </div>
+
+      <div class="calendar-grid">
+        <!-- 1. Gregorian Calendar -->
+        <div class="calendar-card calendar-gregorian">
+          <div class="calendar-card-header">
+            <span class="calendar-type-pill">
+              <i class="fas fa-globe"></i> Gregorian
+            </span>
+            <span class="badge bg-dark text-info border border-info border-opacity-25"
+              style="font-size: 0.7rem;">Solar</span>
+          </div>
+          <div class="calendar-main-day" id="gregorianDay">07</div>
+          <div class="calendar-details">
+            <div class="calendar-month-year" id="gregorianMonthYear">September 2026</div>
+            <div class="calendar-weekday" id="gregorianWeekday">Monday</div>
+          </div>
+          <div class="calendar-script-sub">
+            <span class="text-dim small"><i class="far fa-clock me-1"></i> Standard Civil</span>
+            <span class="text-white small fw-bold">Live Synced</span>
+          </div>
+        </div>
+
+        <!-- 2. Hijri (Islamic Lunar) Calendar -->
+        <div class="calendar-card calendar-hijri">
+          <div class="calendar-card-header">
+            <span class="calendar-type-pill">
+              <i class="fas fa-moon"></i> Hijri (Islamic)
+            </span>
+            <span class="badge bg-dark text-warning border border-warning border-opacity-25"
+              style="font-size: 0.7rem;">Lunar AH</span>
+          </div>
+          <div class="calendar-main-day text-warning" id="hijriDay">24</div>
+          <div class="calendar-details">
+            <div class="calendar-month-year" id="hijriMonthYear">Safar 1448 AH</div>
+            <div class="calendar-weekday" id="hijriWeekday">Al-Taqwīm al-Hijrī</div>
+          </div>
+          <div class="calendar-script-sub">
+            <span class="calendar-arabic-font" id="hijriArabic">٢٤ صفر ١٤٤٨</span>
+            <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">Umm al-Qura</span>
+          </div>
+        </div>
+
+        <!-- 3. Punjabi Desi (Bikrami) Calendar -->
+        <div class="calendar-card calendar-desi">
+          <div class="calendar-card-header">
+            <span class="calendar-type-pill">
+              <i class="fas fa-seedling"></i> Punjabi Desi
+            </span>
+            <span class="badge bg-dark text-success border border-success border-opacity-25"
+              style="font-size: 0.7rem;">Bikrami</span>
+          </div>
+          <div class="calendar-main-day text-success" id="desiDay">23</div>
+          <div class="calendar-details">
+            <div class="calendar-month-year" id="desiMonthYear">Bhadon 2083</div>
+            <div class="calendar-weekday" id="desiSeason">Barkha (Late Monsoon / برسات)</div>
+          </div>
+          <div class="calendar-script-sub">
+            <span class="calendar-desi-font" id="desiScript">23 ਭਾਦੋਂ (بھادوں)</span>
+            <span class="text-teal small fw-semibold">ਪੰਜਾਬੀ ਕੈਲੰਡਰ</span>
+          </div>
+        </div>
+      </div>
+      <!-- MODULE: Daily Habit Tracker (معمولاتِ یومیہ) -->
+      <section class="mt-4" id="sectionHabitTracker">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="section-title m-0">
+            <i class="fas fa-clipboard-check text-emerald"></i> Daily Habit Tracker (روزمرہ معمولات)
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span
+              class="badge bg-dark border border-warning text-warning d-inline-flex align-items-center gap-1 py-2 px-3">
+              <i class="fas fa-fire text-danger"></i> Streak: <span id="dashStreakCount">0</span> Days
+            </span>
+            <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasHabits">
+              <i class="fas fa-bars-progress me-1"></i> Slide-out Sidebar
+            </button>
+          </div>
+        </div>
+
+        <div class="habit-main-card">
+          <div class="row align-items-center g-3 mb-3">
+            <div class="col-md-8 col-12">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fw-bold text-white fs-6">Today's Spiritual Milestones</span>
+                <span class="fw-bold text-teal" id="dashHabitPercentage">0% Completed</span>
+              </div>
+              <div class="progress habit-progress-bg" style="height: 10px; border-radius: 8px;">
+                <div class="progress-bar habit-progress-fill" id="dashHabitBar" role="progressbar" style="width: 0%;">
+                </div>
+              </div>
+              <div class="d-flex justify-content-between text-muted small mt-1">
+                <span id="dashHabitCompletedText">0 of 7 habits completed today</span>
+                <span class="font-urdu text-dim" style="font-size: 0.8rem;">روزانہ رات 12 بجے خودکار ری سیٹ (Auto-reset
+                  at 12:00 AM)</span>
+              </div>
+            </div>
+            <div class="col-md-4 col-12 text-md-end text-start">
+              <div class="habit-midnight-badge">
+                <i class="fas fa-moon text-warning me-1"></i>
+                <span>Midnight Auto-Reset Active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Habits Grid / Checklist on Dashboard -->
+          <div class="habits-grid" id="dashHabitsList">
+            <!-- Injected dynamically by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- MODULE 3: 8-Grid Feature Menu -->
+      <section class="mt-4">
+        <div class="section-title">
+          <i class="fas fa-th-large"></i> Islamic Essentials
+        </div>
+
+        <div class="feature-grid">
+          <!-- 1. Namaz Guide (طریقہ نماز) -->
+          <div class="feature-card" id="cardNamazGuide" style="border-color: rgba(245, 158, 11, 0.4);">
+            <div class="feature-icon-box"
+              style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2)); color: var(--accent-gold-light);">
+              <i class="fas fa-person-praying"></i>
+            </div>
+            <div class="feature-title">طریقہ نماز (Namaz Guide)</div>
+            <div class="feature-subtitle">Method & Translation</div>
+          </div>
+
+          <!-- 2. 99 Names of Allah -->
+          <div class="feature-card" id="cardAllahNames">
+            <div class="feature-icon-box icon-allah">
+              <i class="fas fa-star-and-crescent"></i>
+            </div>
+            <div class="feature-title">99 Names of Allah</div>
+            <div class="feature-subtitle font-urdu">اسماء الحسنیٰ</div>
+          </div>
+
+          <!-- 3. Quran Tilawat -->
+          <div class="feature-card" id="cardTilawat">
+            <div class="feature-icon-box icon-tilawat">
+              <i class="fas fa-headphones-simple"></i>
+            </div>
+            <div class="feature-title">Quran Tilawat</div>
+            <div class="feature-subtitle font-urdu">تلاوتِ قرآن مجید</div>
+          </div>
+
+          <!-- 4. Quran Reading -->
+          <div class="feature-card" id="cardQuranRead">
+            <div class="feature-icon-box icon-quran">
+              <i class="fas fa-quran"></i>
+            </div>
+            <div class="feature-title">Quran Reading</div>
+            <div class="feature-subtitle font-urdu">قرآن مع ترجمہ</div>
+          </div>
+
+          <!-- 5. Tasbeeh Counter -->
+          <div class="feature-card" id="cardTasbeeh">
+            <div class="feature-icon-box icon-tasbeeh">
+              <i class="fas fa-fingerprint"></i>
+            </div>
+            <div class="feature-title">Tasbeeh Counter</div>
+            <div class="feature-subtitle font-urdu">ڈیجیٹل تسبیح کاؤنٹر</div>
+          </div>
+
+          <!-- 6. Qibla Direction -->
+          <div class="feature-card" id="cardQibla">
+            <div class="feature-icon-box icon-qibla">
+              <i class="fas fa-compass"></i>
+            </div>
+            <div class="feature-title">Qibla Direction</div>
+            <div class="feature-subtitle font-urdu">قبلہ کا رخ اور قطب نما</div>
+          </div>
+
+          <!-- 7. Masnoon Duas -->
+          <div class="feature-card" id="cardDuas">
+            <div class="feature-icon-box icon-duas">
+              <i class="fas fa-hands-praying"></i>
+            </div>
+            <div class="feature-title">Masnoon Duas</div>
+            <div class="feature-subtitle font-urdu">مسنون دعائیں و اذکار</div>
+          </div>
+
+          <!-- 8. 99 Names of Prophet -->
+          <div class="feature-card" id="cardProphetNames">
+            <div class="feature-icon-box icon-prophet">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="feature-title">Prophet's Names</div>
+            <div class="feature-subtitle font-urdu">مکمل 99 اسماء النبی ﷺ</div>
+          </div>
+
+          <!-- 9. Islamic Stories -->
+          <div class="feature-card" id="cardStories">
+            <div class="feature-icon-box icon-stories">
+              <i class="fas fa-book-open-reader"></i>
+            </div>
+            <div class="feature-title">Islamic Stories</div>
+            <div class="feature-subtitle font-urdu">سبق آموز اسلامی کہانیاں</div>
+          </div>
+        </div>
+      </section>
+  </div><!-- /container-app -->
+
+  <!-- ==========================================================================
+       MODULE: Daily Habit Tracker Slide-Out Sidebar (Offcanvas)
+       ========================================================================== -->
+  <div class="offcanvas offcanvas-end offcanvas-islamic" tabindex="-1" id="offcanvasHabits"
+    aria-labelledby="offcanvasHabitsLabel">
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-25 pb-3">
+      <div class="d-flex align-items-center gap-2">
+        <div class="habit-header-icon"><i class="fas fa-clipboard-check text-emerald fs-4"></i></div>
+        <div>
+          <h5 class="offcanvas-title text-white fw-bold m-0" id="offcanvasHabitsLabel">Daily Habit Tracker</h5>
+          <span class="small text-muted font-urdu" style="font-size: 0.8rem;">روزمرہ معمولات و اعمالِ صالحہ</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-3 p-md-4">
+      <!-- Progress Summary & Streak -->
+      <div class="habit-summary-box mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-teal small fw-bold">Today's Progress</span>
+          <span class="badge bg-dark border border-warning text-warning d-inline-flex align-items-center gap-1"
+            id="offcanvasStreakBadge">
+            <i class="fas fa-fire text-danger"></i> <span id="offcanvasStreakCount">0</span> Day Streak
+          </span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="fs-3 fw-bold text-white" id="offcanvasHabitPercentage">0%</span>
+          <span class="small text-dim" id="offcanvasHabitRatio">0 of 7 Completed</span>
+        </div>
+        <div class="progress habit-progress-bg" style="height: 10px; border-radius: 8px;">
+          <div class="progress-bar habit-progress-fill" id="offcanvasProgressBar" role="progressbar" style="width: 0%;">
+          </div>
+        </div>
+        <div class="habit-midnight-notice mt-2">
+          <i class="fas fa-clock-rotate-left me-1 text-warning"></i>
+          <span>Auto-resets every night at 12:00 AM Midnight</span>
+        </div>
+      </div>
+
+      <!-- Checklist Items -->
+      <div class="habit-checklist" id="offcanvasHabitsList">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODULE 4: Advanced Tasbeeh Counter Modal (Dark Sleek Theme)
+       ========================================================================== -->
+  <div class="modal fade" id="tasbeehModal" tabindex="-1" aria-labelledby="tasbeehModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-islamic border-0 p-0 overflow-hidden">
+        <div class="tasbeeh-container-dark">
+
+          <!-- Modal Close & Sound Toggle Header -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-sm btn-outline-light rounded-circle" id="btnTasbeehSoundToggle"
+              title="Toggle audio chime">
+              <i class="fas fa-volume-up"></i>
+            </button>
+            <h5 class="m-0 fw-bold text-white d-flex align-items-center gap-2">
+              <i class="fas fa-fingerprint text-warning"></i> Digital Tasbeeh
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Zikr Arabic Display & Translation -->
+          <div class="tasbeeh-zikr-arabic" id="tasbeehArabicDisplay">سُبْحَانَ اللَّهِ</div>
+          <div class="tasbeeh-zikr-meaning" id="tasbeehMeaningDisplay">SubhanAllah — Glory be to Allah</div>
+
+          <!-- Dropdown Selectors: Zikr & Goal -->
+          <div class="tasbeeh-controls-row">
+            <select class="tasbeeh-select" id="tasbeehZikrSelect" aria-label="Select Zikr">
+              <!-- Dynamically populated -->
+            </select>
+
+            <select class="tasbeeh-goal-select" id="tasbeehGoalSelect" aria-label="Select Goal">
+              <option value="33">Goal: 33</option>
+              <option value="100">Goal: 100</option>
+              <option value="500">Goal: 500</option>
+              <option value="1000">Goal: 1000</option>
+              <option value="0">Free Count</option>
+            </select>
+          </div>
+
+          <!-- Goal Reached Toast Alert -->
+          <div id="tasbeehGoalToast" class="alert alert-success py-1 px-3 mb-2 rounded-pill fw-bold"
+            style="display: none; background: rgba(16, 185, 129, 0.3); border-color: var(--accent-emerald);">
+            🎉 Masha'Allah! Target Goal Completed!
+          </div>
+
+          <!-- Interactive Tap Circle & Progress Ring -->
+          <div class="tasbeeh-counter-stage">
+            <svg class="tasbeeh-svg-ring" viewBox="0 0 240 240">
+              <circle class="tasbeeh-ring-bg" cx="120" cy="120" r="95"></circle>
+              <circle class="tasbeeh-ring-progress" id="tasbeehRingProgress" cx="120" cy="120" r="95"></circle>
+            </svg>
+
+            <button class="btn-tasbeeh-tap" id="btnTasbeehTap" aria-label="Tap to count">
+              <div class="tasbeeh-count-number" id="tasbeehCountDisplay">0</div>
+              <div class="tasbeeh-target-label" id="tasbeehTargetLabel">Target: 33</div>
+              <div class="tasbeeh-tap-hint">TAP / SPACE</div>
+            </button>
+          </div>
+
+          <!-- Bottom Statistics Bar -->
+          <div class="tasbeeh-stats-bar">
+            <div class="tasbeeh-stat-item">
+              <span class="tasbeeh-stat-val" id="tasbeehCycleCount">0</span>
+              <span class="tasbeeh-stat-name">Cycles Completed</span>
+            </div>
+            <div class="tasbeeh-stat-item">
+              <span class="tasbeeh-stat-val" id="tasbeehTotalCount">0</span>
+              <span class="tasbeeh-stat-name">Total Lifetime Taps</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="tasbeeh-actions-bar">
+            <button class="btn-tasbeeh-action btn-tasbeeh-reset" id="btnTasbeehReset">
+              <i class="fas fa-rotate-left"></i> Reset Count
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ==========================================================================
+       MODALS FOR 8-GRID FEATURE MENU
+       ========================================================================== -->
+
+  <!-- 1. 99 Names of Allah Modal -->
+  <div class="modal fade" id="modalAllahNames" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-star-and-crescent text-warning"></i> Asma-ul-Husna (99 Names of Allah)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3">
+          <!-- Top Sequential Audio Controls Bar -->
+          <div class="names-audio-controls-bar mb-3 p-2 rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-play-all rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-2" id="btnPlayAllAllahNames" title="Play All 99 Names sequentially">
+                <i class="fas fa-play"></i> <span>سب نام ایک ساتھ سنیں (Play All)</span>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-2 btn-stop-all" id="btnStopAllahNames" title="Stop audio playback">
+                <i class="fas fa-stop"></i> <span>روکیں (Stop)</span>
+              </button>
+            </div>
+            <div class="small text-muted font-urdu" id="allahAudioStatusBadge">
+              <i class="fas fa-volume-high text-teal me-1"></i> <span id="allahAudioStatusText">۹۹ اسماء الحسنیٰ باآوازِ عربی</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <input type="text" class="form-control bg-dark text-white border-secondary rounded-pill"
+              id="searchAllahNames" placeholder="Search by English name, meaning, or Arabic...">
+          </div>
+          <div class="names-grid" id="allahNamesContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Quran Tilawat Audio Modal -->
+  <div class="modal fade" id="modalTilawat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-headphones-simple text-info"></i> Quran Tilawat Audio
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3">
+          <div class="audio-player-box mb-3">
+            <div class="fw-bold fs-5 text-white" id="nowPlayingSurahTitle">Surah Yaseen (سورة يٰسٓ)</div>
+            <div class="small text-muted mb-3" id="nowPlayingReciter">Mishary Rashid Alafasy</div>
+            <audio id="quranAudioPlayer" controls class="w-100" style="outline: none;">
+              <source src="https://server8.mp3quran.net/afs/036.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div class="small text-teal fw-bold mb-2">Select Surah to Listen:</div>
+          <div id="tilawatListContainer" style="max-height: 280px; overflow-y: auto;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Quran Reading Modal -->
+  <div class="modal fade" id="modalQuranRead" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-quran text-success"></i> Quran Reading & Translation
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label small text-dim">Choose Surah:</label>
+            <select class="form-select bg-dark text-white border-secondary" id="quranSurahSelect">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div id="quranTextViewer">
+            <!-- Surah Content -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Qibla Compass Modal -->
+  <div class="modal fade" id="modalQibla" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-islamic text-center">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-compass text-warning"></i> Qibla Direction (قبلہ کا رخ)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <!-- Alignment Alert / Guidance Badge -->
+          <div class="qibla-align-badge mb-3" id="qiblaAlignStatus">
+            <i class="fas fa-arrows-spin me-1"></i> Orient your device flat to align with the Kaaba
+          </div>
+
+          <!-- Compass Dial Wrapper -->
+          <div class="compass-stage">
+            <div class="compass-wrapper" id="compassOuterWrapper">
+              <!-- Dial with Degree Graduations -->
+              <div class="compass-dial" id="compassDialRing">
+                <span class="compass-cardinal compass-n">N</span>
+                <span class="compass-cardinal compass-e">E</span>
+                <span class="compass-cardinal compass-s">S</span>
+                <span class="compass-cardinal compass-w">W</span>
+                <div class="compass-graduations"></div>
+              </div>
+
+              <!-- Kaaba Direction Needle -->
+              <div class="compass-needle" id="qiblaCompassNeedle">
+                <div class="needle-tip-kaaba" title="Direction to Holy Kaaba">🕋</div>
+              </div>
+              <div class="compass-center-pin"></div>
+            </div>
+          </div>
+
+          <!-- Bearing & Coordinates Information -->
+          <div class="qibla-stats-box mt-3">
+            <div class="fs-3 fw-bold text-white mb-1" id="qiblaBearingDisplay">--° to Kaaba</div>
+            <div class="d-flex justify-content-center gap-3 text-muted small flex-wrap">
+              <span id="qiblaUserCoords">User: 31.520° N, 74.358° E</span>
+              <span>•</span>
+              <span>Kaaba: 21.423° N, 39.826° E</span>
+            </div>
+            <div class="small text-teal mt-1" id="qiblaDeviceHeadingText">
+              <i class="fas fa-mobile-screen-button me-1"></i> Sensor Heading: <span id="qiblaSensorAngle">Static
+                (Awaiting Orientation)</span>
+            </div>
+          </div>
+
+          <!-- Mobile Sensor Permission / Enable Button -->
+          <div class="mt-3">
+            <button class="btn btn-sm btn-outline-warning rounded-pill px-3" id="btnEnableCompassSensors">
+              <i class="fas fa-crosshairs me-1"></i> Calibrate / Enable Mobile Compass
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Masnoon Duas Modal -->
+  <div class="modal fade" id="modalDuas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-hands-praying text-purple" style="color: #a78bfa;"></i> Masnoon Duas (Supplications)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-4" id="masnoonDuasContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 99 Names of Prophet (ﷺ) Modal -->
+  <div class="modal fade" id="modalProphetNames" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-heart text-warning"></i> Asma-un-Nabi (مکمل 99 اسماء النبی ﷺ)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3">
+          <!-- Top Sequential Audio Controls Bar -->
+          <div class="names-audio-controls-bar mb-3 p-2 rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-play-all rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-2" id="btnPlayAllProphetNames" title="Play All 99 Names of Prophet PBUH sequentially">
+                <i class="fas fa-play"></i> <span>سب نام ایک ساتھ سنیں (Play All)</span>
+              </button>
+              <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-2 btn-stop-all" id="btnStopProphetNames" title="Stop audio playback">
+                <i class="fas fa-stop"></i> <span>روکیں (Stop)</span>
+              </button>
+            </div>
+            <div class="small text-muted font-urdu" id="prophetAudioStatusBadge">
+              <i class="fas fa-volume-high text-teal me-1"></i> <span id="prophetAudioStatusText">۹۹ اسماء النبی ﷺ باآوازِ عربی</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <input type="text" class="form-control bg-dark text-white border-secondary rounded-pill"
+              id="searchProphetNames" placeholder="Search 99 names (Urdu, English, Arabic, or meaning)...">
+          </div>
+          <div class="names-grid" id="prophetNamesContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Islamic Stories Modal -->
+  <div class="modal fade" id="modalStories" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic">
+            <i class="fas fa-book-open-reader text-teal"></i> Inspiring Islamic Stories (سبق آموز کہانیاں)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-4" id="storiesContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Complete Namaz Guide (نماز کا مکمل طریقہ بمعہ اردو ترجمہ) Modal -->
+  <div class="modal fade" id="modalNamazGuide" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic font-urdu">
+            <i class="fas fa-person-praying text-warning me-2"></i> نماز کا مکمل طریقہ بمعہ اردو ترجمہ و تلفظ (Complete
+            Namaz Guide)
+          </h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <!-- Nav Tabs -->
+          <ul
+            class="nav nav-pills mb-4 gap-2 border-bottom border-secondary border-opacity-25 pb-3 flex-nowrap overflow-x-auto"
+            id="namazTabNav" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active rounded-pill px-3 px-md-4 fw-bold font-urdu" id="tab-steps-btn"
+                data-bs-toggle="pill" data-bs-target="#tab-steps" type="button" role="tab"
+                style="font-size: 0.92rem; white-space: nowrap;">
+                <i class="fas fa-list-ol me-1"></i> طریقہ نماز (Step-by-Step)
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill px-3 px-md-4 fw-bold font-urdu" id="tab-rakats-btn"
+                data-bs-toggle="pill" data-bs-target="#tab-rakats" type="button" role="tab"
+                style="font-size: 0.92rem; white-space: nowrap;">
+                <i class="fas fa-table-cells me-1"></i> نماز کی رکعتیں (Rakat Chart)
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill px-3 px-md-4 fw-bold font-urdu" id="tab-qunoot-btn"
+                data-bs-toggle="pill" data-bs-target="#tab-qunoot" type="button" role="tab"
+                style="font-size: 0.92rem; white-space: nowrap;">
+                <i class="fas fa-star me-1"></i> دعائے قنوت (Dua-e-Qunoot)
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill px-3 px-md-4 fw-bold font-urdu" id="tab-wudu-btn"
+                data-bs-toggle="pill" data-bs-target="#tab-wudu" type="button" role="tab"
+                style="font-size: 0.92rem; white-space: nowrap;">
+                <i class="fas fa-hands-bubbles me-1"></i> مسنون وضو (Wudu Guide)
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tab Content Panels -->
+          <div class="tab-content" id="namazTabContent">
+            <!-- 1. Steps -->
+            <div class="tab-pane fade show active" id="tab-steps" role="tabpanel">
+              <div id="namazStepsTab"></div>
+            </div>
+            <!-- 2. Rakats -->
+            <div class="tab-pane fade" id="tab-rakats" role="tabpanel">
+              <div id="namazRakatsTab"></div>
+            </div>
+            <!-- 3. Dua Qunoot -->
+            <div class="tab-pane fade" id="tab-qunoot" role="tabpanel">
+              <div id="namazQunootTab"></div>
+            </div>
+            <!-- 4. Wudu -->
+            <div class="tab-pane fade" id="tab-wudu" role="tabpanel">
+              <div id="namazWuduTab"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- City Picker Modal -->
+  <div class="modal fade" id="modalCityPicker" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic"><i class="fas fa-city text-warning"></i> Select City</h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-3">
+          <div class="list-group" id="citySelectorModalList">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings / Calculation Method Modal -->
+  <div class="modal fade" id="modalSettings" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-islamic">
+        <div class="modal-header modal-header-islamic">
+          <h5 class="modal-title-islamic"><i class="fas fa-sliders-h text-teal"></i> Prayer Calculation Method</h5>
+          <button type="button" class="btn-close-islamic" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label text-dim small">Juristic / Authority Method:</label>
+            <select class="form-select bg-dark text-white border-secondary" id="prayerMethodSelect">
+              <option value="1" selected>University of Islamic Sciences, Karachi (Hanafi / Subcontinent)</option>
+              <option value="4">Umm al-Qura University, Makkah (Saudi Arabia)</option>
+              <option value="3">Muslim World League (MWL - Europe / International)</option>
+              <option value="2">Islamic Society of North America (ISNA - USA / Canada)</option>
+              <option value="5">Egyptian General Authority of Survey</option>
+            </select>
+          </div>
+          <p class="small text-muted">
+            Changing the method automatically recalculates Fajr, Asr, and Isha prayer timings from the Aladhan API
+            according to the selected juristic standard.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AI ISLAMIC SCHOLAR: RANA MUFTI SAHIB (WhatsApp & Islamic Luxury)
+       ========================================================================== -->
+  <!-- Floating Launcher Button -->
+  <button class="chatbot-trigger-btn" id="chatbotTriggerBtn" aria-label="Ask Rana Mufti Sahib AI"
+    title="رانا مفتی صاحب (AI Scholar)">
+    <div class="chatbot-pulse-ring"></div>
+    <i class="fas fa-comment-dots"></i>
+    <span class="trigger-badge">مفتی AI</span>
+  </button>
+
+  <!-- WhatsApp-Style Scholar Chat Window -->
+  <div class="chat-window-modal" id="chatWindowModal">
+    <!-- Header -->
+    <div class="chat-window-header">
+      <div class="chat-header-profile">
+        <div class="chat-avatar-wrapper">
+          <i class="fas fa-user-tie"></i>
+          <span class="chat-online-dot" title="Online"></span>
+        </div>
+        <div class="chat-header-info">
+          <h6 class="chat-header-title">رانا مفتی صاحب <i class="fas fa-check-circle text-teal small"></i></h6>
+          <span class="chat-header-sub">خادمِ علم و تحقیق • زیرِ سرپرستی رانا حسین مصطفیٰ</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-action-btn" id="btnChatKeyConfig" title="Configure Google Gemini API Key">
+          <i class="fas fa-key"></i>
+        </button>
+        <button class="chat-action-btn" id="btnChatClose" title="Close chat">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages Body -->
+    <div class="chat-window-body" id="chatBody">
+      <div class="chat-bubble chat-bubble-ai">
+        <div class="chat-msg-content">
+          السلام علیکم و رحمۃ اللہ و برکاتہ<br>
+          بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>
+          <strong>میرے انتہائی محترم و پیارے دوست!</strong><br>
+          میں <strong>رانا مفتی صاحب</strong> ہوں۔ قرآن و سنتِ نبوی ﷺ، آثارِ صحابہ، اور شیخ الاسلام ڈاکٹر محمد طاہر
+          القادری کے معتدل تحقیقی افکار کی روشنی میں آپ کی شرعی، فقہی اور روحانی رہنمائی کے لیے حاضر ہوں۔<br><br>
+          آپ کوئی بھی سوال بلا جھجھک پوچھ سکتے ہیں۔
+        </div>
+        <div class="chat-meta-time">ابھی ابھی</div>
+      </div>
+    </div>
+
+    <!-- Suggested Question Chips Carousel -->
+    <div class="chat-prompt-chips">
+      <span class="chip-prompt" data-prompt="روزے کے بنیادی مسائل اور نیت کا طریقہ بتائیں">🌙 روزے کے مسائل</span>
+      <span class="chip-prompt" data-prompt="نمازِ تہجد کی فضیلت اور طریقہ کیا ہے؟">✨ نمازِ تہجد</span>
+      <span class="chip-prompt" data-prompt="ذہنی دباؤ اور پریشانی دور کرنے کی دعا اور مسنون عمل">🤲 پریشانی کا
+        حل</span>
+      <span class="chip-prompt" data-prompt="امتحان اور تعلیمی کامیابی کے لیے مسنون دعا">📚 امتحان میں کامیابی</span>
+      <span class="chip-prompt" data-prompt="اگر کوئی نماز قضا ہو جائے تو اس کا کیا حکم ہے؟">🕌 قضا نماز کا حکم</span>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="chat-window-footer">
+      <input type="text" class="chat-input-field" id="chatInput"
+        placeholder="مفتی صاحب سے شرعی یا روحانی سوال پوچھیں..." autocomplete="off">
+      <button class="chat-send-btn" id="btnChatSend" aria-label="Send message">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Modular Scripts -->
+  <script src="js/calendar.js?v=2.4"></script>
+  <script src="js/tasbeeh.js?v=2.4"></script>
+  <script src="js/modules.js?v=2.4"></script>
+  <script src="js/chatbot.js?v=2.4"></script>
+  <script src="js/app.js?v=2.4"></script>
+</body>
+
+</html>
